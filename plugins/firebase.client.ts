@@ -4,13 +4,13 @@ import { getFirestore } from 'firebase/firestore'
 
 export default defineNuxtPlugin(() => {
   const config = {
-    apiKey: "AIzaSyC5YyqMw6QdZ9F0ndk3d_8PR9b42A3BB-A",
-    authDomain: "libraryapp-53015.firebaseapp.com",
-    projectId: "libraryapp-53015",
-    storageBucket: "libraryapp-53015.firebasestorage.app",
-    messagingSenderId: "737961832190",
-    appId: "1:737961832190:web:ea45b58a6d8e0bb60d3faf",
-    measurementId: "G-H44JNPJMBK"
+    apiKey: "AIzaSyBAjpPVYVAISsTdfORUmW277ljVd_G7mVo",
+    authDomain: "nuxt-auth-3893a.firebaseapp.com",
+    projectId: "nuxt-auth-3893a",
+    storageBucket: "nuxt-auth-3893a.firebasestorage.app",
+    messagingSenderId: "361342646",
+    appId: "1:361342646:web:f58b033c222ca26ed0a817",
+    measurementId: "G-3KLG637QFM"
   };
 
   const firebaseApp = initializeApp(config);

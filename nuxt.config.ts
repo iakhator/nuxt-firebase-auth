@@ -5,5 +5,6 @@ export default defineNuxtConfig({
   runtimeConfig: {
     FIREBASE_SERVICE_ACCOUNT: process.env.FIREBASE_SERVICE_ACCOUNT,
     FIREBASE_DATABASE_URL: process.env.FIREBASE_DATABASE_URL
-  }
+  },
+  modules: ['@pinia/nuxt',]
 })

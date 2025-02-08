@@ -6,12 +6,10 @@ import serviceAccountKey from "~/serviceAccountKey";
 export function useFirebaseAdmin() {
   // const config = useRuntimeConfig();
 
-  // console.log(config, 'config')
   
   if (!getApps().length) {
     try {
 
-      // console.log(serviceAccount, 'serviceAccount')
       initializeApp({
         credential: cert(serviceAccountKey as ServiceAccount),
       });
