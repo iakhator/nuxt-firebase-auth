@@ -1,18 +1,29 @@
-import { initializeApp, cert, getApps } from "firebase-admin/app";
+import { initializeApp, cert, getApps, ServiceAccount } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 import { getFirestore } from "firebase-admin/firestore";
+import serviceAccountKey from "~/serviceAccountKey";
 
-let firebaseAdmin;
+export function useFirebaseAdmin() {
+  // const config = useRuntimeConfig();
 
-if (!getApps().length) {
-  const serviceAccount = JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS as string);
+  // console.log(config, 'config')
+  
+  if (!getApps().length) {
+    try {
 
-  firebaseAdmin = initializeApp({
-    credential: cert(serviceAccount),
-  });
-} else {
-  firebaseAdmin = getApps()[0]; // Use existing instance
+      // console.log(serviceAccount, 'serviceAccount')
+      initializeApp({
+        credential: cert(serviceAccountKey as ServiceAccount),
+      });
+
+      console.log('🔥 Firebase Admin Initialized');
+    } catch (error) {
+      console.error('❌ Firebase Admin Initialization Failed:', error);
+    }
+  }
+
+  return {
+    adminAuth: getAuth(),
+    adminFirestore: getFirestore(),
+  };
 }
-
-export const adminAuth = getAuth(firebaseAdmin);
-export const adminFirestore = getFirestore(firebaseAdmin);
