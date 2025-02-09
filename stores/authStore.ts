@@ -1,4 +1,9 @@
-import { getAuth, signInWithCustomToken, signOut } from 'firebase/auth'
+import {
+  getAuth,
+  signInWithCustomToken,
+  signOut,
+  onAuthStateChanged,
+} from 'firebase/auth'
 import type { User } from 'firebase/auth'
 interface FormData {
   email: string
@@ -10,6 +15,7 @@ interface AuthState {
   user: User | null
   token: string | null
   errorMessage: string | null
+  loading: boolean
 }
 
 interface UserResponse {
@@ -26,6 +32,7 @@ export const useAuthStore = defineStore('auth', {
     user: null,
     token: null,
     errorMessage: null,
+    loading: true,
   }),
 
   actions: {
@@ -38,17 +45,39 @@ export const useAuthStore = defineStore('auth', {
           body: { email, password, displayName },
         })
 
-        await signInWithCustomToken($auth, user.token)
-        this.user = $auth.currentUser
+        if (user.token) {
+          await signInWithCustomToken($auth, user.token)
+          this.user = $auth.currentUser
+        }
       } catch (error: any) {
         console.log(error, 'error')
         this.errorMessage = error.message
       }
     },
+
+    async observeAuthState() {
+      const { $auth } = useNuxtApp()
+
+      if ($auth) {
+        onAuthStateChanged($auth, async (user) => {
+          if (user) {
+            this.user = user
+            this.token = await user.getIdToken()
+          } else {
+            this.user = null
+            this.token = null
+          }
+
+          this.loading = false
+        })
+      }
+    },
+
     logOut() {
       const { $auth } = useNuxtApp()
       signOut($auth)
       this.user = null
+      this.token = null
     },
   },
 })

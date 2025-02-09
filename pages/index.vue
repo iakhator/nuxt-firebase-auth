@@ -1,6 +1,4 @@
 <script lang="ts" setup>
-import { getAuth, signInWithCustomToken, signOut } from 'firebase/auth'
-import type { User } from 'firebase/auth'
 import { useAuthStore } from '~/stores/authStore'
 
 const router = useRouter()
@@ -10,9 +8,6 @@ const form = ref({
   password: '',
   displayName: '',
 })
-
-// const user = ref<User | null>(null);
-// const errorMessage = ref<string>('');
 
 async function signUp() {
   const authStore = useAuthStore()
