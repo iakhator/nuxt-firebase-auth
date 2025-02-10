@@ -4,7 +4,7 @@ import {
   signOut,
   onAuthStateChanged,
 } from 'firebase/auth'
-import type { User } from 'firebase/auth'
+import type { User, UserCredential } from 'firebase/auth'
 interface FormData {
   email: string
   displayName?: string
@@ -51,6 +51,21 @@ export const useAuthStore = defineStore('auth', {
         }
       } catch (error: any) {
         console.log(error, 'error')
+        this.errorMessage = error.message
+      }
+    },
+
+    async login({ email, password }: FormData) {
+      const { $auth } = useNuxtApp()
+
+      try {
+        const user: UserResponse = await $fetch('/api/auth/login', {
+          method: 'post',
+          body: { email, password },
+        })
+        await signInWithCustomToken($auth, user.token)
+        this.user = $auth.currentUser
+      } catch (error: any) {
         this.errorMessage = error.message
       }
     },
