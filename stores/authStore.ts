@@ -3,6 +3,9 @@ import {
   signInWithCustomToken,
   signOut,
   onAuthStateChanged,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  getIdToken,
 } from 'firebase/auth'
 import type { User, UserCredential } from 'firebase/auth'
 interface FormData {
@@ -13,8 +16,8 @@ interface FormData {
 
 interface AuthState {
   user: User | null
-  token: string | null
   errorMessage: string | null
+  token: string | null
   loading: boolean
 }
 
@@ -30,8 +33,8 @@ interface UserResponse {
 export const useAuthStore = defineStore('auth', {
   state: (): AuthState => ({
     user: null,
-    token: null,
     errorMessage: null,
+    token: null,
     loading: true,
   }),
 
@@ -58,41 +61,48 @@ export const useAuthStore = defineStore('auth', {
     async login({ email, password }: FormData) {
       const { $auth } = useNuxtApp()
 
+      // try {
+      //   const user: UserResponse = await $fetch('/api/auth/login', {
+      //     method: 'post',
+      //     body: { email, password },
+      //   })
+      //   await signInWithCustomToken($auth, user.token)
+      //   this.user = $auth.currentUser
+      // } catch (error: any) {
+      //   this.errorMessage = error.message
+      // }
+
       try {
-        const user: UserResponse = await $fetch('/api/auth/login', {
-          method: 'post',
-          body: { email, password },
-        })
-        await signInWithCustomToken($auth, user.token)
-        this.user = $auth.currentUser
+        const userCredential: UserCredential = await signInWithEmailAndPassword(
+          $auth,
+          email,
+          password
+        )
+        this.user = userCredential.user
+        navigateTo('/dashboard')
       } catch (error: any) {
         this.errorMessage = error.message
       }
     },
 
-    async observeAuthState() {
+    async initAuth() {
       const { $auth } = useNuxtApp()
 
-      if ($auth) {
+      return new Promise((resolve) => {
         onAuthStateChanged($auth, async (user) => {
-          if (user) {
-            this.user = user
-            this.token = await user.getIdToken()
-          } else {
-            this.user = null
-            this.token = null
-          }
-
-          this.loading = false
+          this.user = user
+          this.token = user ? await getIdToken(user) : null
+          // this.loading = false
+          resolve(user)
         })
-      }
+      })
     },
 
-    logOut() {
+    async logOut() {
       const { $auth } = useNuxtApp()
-      signOut($auth)
+      await signOut($auth)
       this.user = null
-      this.token = null
+      navigateTo('/')
     },
   },
 })

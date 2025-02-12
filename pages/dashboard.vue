@@ -13,26 +13,6 @@ definePageMeta({
   // middleware: ['auth'],
 })
 
-// $auth.onAuthStateChanged((user) => {
-//   if (user) {
-//     console.log('User is signed in')
-//   } else {
-//     console.log('User is signed out')
-//   }
-// })
-
-// onMounted(() => {
-//   // console.log($auth, 'auth')
-//   // console.log($auth.currentUser, 'currentUser')
-//   onAuthStateChanged($auth, (user) => {
-//     if (user) {
-//       console.log('User is signed in', user)
-//     } else {
-//       console.log('User is signed out')
-//     }
-//   })
-// })
-
 function signOut() {
   const authStore = useAuthStore()
   authStore.logOut()

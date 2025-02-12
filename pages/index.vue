@@ -1,6 +1,17 @@
 <script lang="ts" setup>
 import { useAuthStore } from '~/stores/authStore'
 
+definePageMeta({
+  title: 'Index',
+  ssr: false,
+  middleware: [
+    function (to, from) {
+      const authStore = useAuthStore()
+      console.log('I got here', authStore.user)
+    },
+  ],
+})
+
 const router = useRouter()
 
 const form = ref({
