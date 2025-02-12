@@ -1,10 +1,8 @@
 <script setup lang="ts">
-import { useAuthStore } from '~/stores/authStore'
+// import { useAuthStore } from '~/stores/authStore'
 
-onMounted(async () => {
-  const authStore = useAuthStore()
-  await authStore.initAuth()
-})
+// const authStore = useAuthStore()
+// await authStore.initAuth()
 </script>
 
 <template>

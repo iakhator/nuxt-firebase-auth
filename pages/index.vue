@@ -3,13 +3,7 @@ import { useAuthStore } from '~/stores/authStore'
 
 definePageMeta({
   title: 'Index',
-  ssr: false,
-  middleware: [
-    function (to, from) {
-      const authStore = useAuthStore()
-      console.log('I got here', authStore.user)
-    },
-  ],
+  // middleware: ['auth'],
 })
 
 const router = useRouter()

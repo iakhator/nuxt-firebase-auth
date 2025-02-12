@@ -9,7 +9,6 @@ const { $auth } = useNuxtApp()
 
 definePageMeta({
   title: 'Dashboard',
-  auth: true,
   // middleware: ['auth'],
 })
 
