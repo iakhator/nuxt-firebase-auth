@@ -3,6 +3,7 @@ import { getAuth } from 'firebase/auth'
 import { getFirestore } from 'firebase/firestore'
 
 export default defineNuxtPlugin(() => {
+  console.log('🔥 Firebase Client Initialized')
   const config = {
     apiKey: 'AIzaSyBAjpPVYVAISsTdfORUmW277ljVd_G7mVo',
     authDomain: 'nuxt-auth-3893a.firebaseapp.com',

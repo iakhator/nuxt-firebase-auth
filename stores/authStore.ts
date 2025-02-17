@@ -17,8 +17,8 @@ interface FormData {
 interface AuthState {
   user: User | null
   errorMessage: string | null
-  token: string | null
-  loading: boolean
+  // token: string | null
+  isAuthReady: boolean
 }
 
 interface UserResponse {
@@ -34,8 +34,8 @@ export const useAuthStore = defineStore('auth', {
   state: (): AuthState => ({
     user: null,
     errorMessage: null,
-    token: null,
-    loading: true,
+    // token: null,
+    isAuthReady: false,
   }),
 
   actions: {
@@ -43,65 +43,60 @@ export const useAuthStore = defineStore('auth', {
       const { $auth } = useNuxtApp()
 
       try {
-        const user: UserResponse = await $fetch('/api/auth/register', {
-          method: 'post',
-          body: { email, password, displayName },
-        })
-
-        if (user.token) {
-          await signInWithCustomToken($auth, user.token)
-          this.user = $auth.currentUser
-        }
-      } catch (error: any) {
-        console.log(error, 'error')
-        this.errorMessage = error.message
-      }
-    },
-
-    async login({ email, password }: FormData) {
-      const { $auth } = useNuxtApp()
-
-      // try {
-      //   const user: UserResponse = await $fetch('/api/auth/login', {
-      //     method: 'post',
-      //     body: { email, password },
-      //   })
-      //   await signInWithCustomToken($auth, user.token)
-      //   this.user = $auth.currentUser
-      // } catch (error: any) {
-      //   this.errorMessage = error.message
-      // }
-
-      try {
-        const userCredential: UserCredential = await signInWithEmailAndPassword(
-          $auth,
-          email,
-          password
-        )
-        this.user = userCredential.user
+        const userCredential: UserCredential =
+          await createUserWithEmailAndPassword($auth, email, password)
+        await this.setUser(userCredential.user)
         navigateTo('/dashboard')
       } catch (error: any) {
         this.errorMessage = error.message
       }
     },
 
-    async initAuth() {
+    async login({ email, password }: FormData) {
       const { $auth } = useNuxtApp()
+      try {
+        const userCredential: UserCredential = await signInWithEmailAndPassword(
+          $auth,
+          email,
+          password
+        )
+        await this.setUser(userCredential.user)
+        navigateTo('/dashboard')
+      } catch (error: any) {
+        this.errorMessage = error.message
+      }
+    },
 
-      return new Promise((resolve) => {
+    async setUser(user: User | null) {
+      this.user = user
+      this.isAuthReady = !!user
+
+      if (user) {
+        this.user = user
+        const token = await user.getIdToken()
+        useCookie('authToken').value = token
+      }
+    },
+
+    async initAuth() {
+      const { $auth, ssrContext } = useNuxtApp()
+
+      if (process.server) {
+        this.user = ssrContext?.event.context.user || null
+        this.isAuthReady = !!this.user
+      } else {
         onAuthStateChanged($auth, async (user) => {
-          this.user = user
-          this.token = user ? await getIdToken(user) : null
-          // this.loading = false
-          resolve(user)
+          await this.setUser(user)
         })
-      })
+      }
     },
 
     async logOut() {
       const { $auth } = useNuxtApp()
       await signOut($auth)
       this.user = null
+      this.isAuthReady = false
+      useCookie('authToken').value = null
       navigateTo('/')
     },
   },
