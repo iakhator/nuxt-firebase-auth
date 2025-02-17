@@ -20,6 +20,8 @@ const authStore = useAuthStore()
 </script>
 
 <template>
-  <h1>Dashboard page login</h1>
-  <button @click="signOut">Log Out</button>
+  <div>
+    <h1>Dashboard page {{ authStore.user?.displayName }}</h1>
+    <button @click="signOut">Log Out</button>
+  </div>
 </template>

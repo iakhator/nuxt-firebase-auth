@@ -1,11 +1,8 @@
 import {
-  getAuth,
-  signInWithCustomToken,
   signOut,
   onAuthStateChanged,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
-  getIdToken,
 } from 'firebase/auth'
 import type { User, UserCredential } from 'firebase/auth'
 interface FormData {
@@ -17,7 +14,6 @@ interface FormData {
 interface AuthState {
   user: User | null
   errorMessage: string | null
-  // token: string | null
   isAuthReady: boolean
 }
 
@@ -34,7 +30,6 @@ export const useAuthStore = defineStore('auth', {
   state: (): AuthState => ({
     user: null,
     errorMessage: null,
-    // token: null,
     isAuthReady: false,
   }),
 
