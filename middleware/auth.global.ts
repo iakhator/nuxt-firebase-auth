@@ -7,8 +7,6 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const publicPages = ['/', '/register']
   const authRequired = !publicPages.includes(to.path)
 
-  // console.log(authRequired, 'requried', authStore.isAuthReady, 'authready')
-
   if (authRequired && !authStore.isAuthReady) {
     return navigateTo('/')
   }
