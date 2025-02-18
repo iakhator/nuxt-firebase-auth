@@ -69,15 +69,33 @@ export const useAuthStore = defineStore('auth', {
       if (user) {
         this.user = user
         const token = await user.getIdToken()
+
         useCookie('authToken').value = token
+      }
+    },
+
+    async initSessionAuth() {
+      const { $auth, ssrContext } = useNuxtApp()
+
+      if (import.meta.server) {
+        const { data } = await useFetch('/api/auth/user')
       }
     },
 
     async initAuth() {
       const { $auth, ssrContext } = useNuxtApp()
-
-      if (process.server) {
-        this.user = ssrContext?.event.context.user || null
+      // if (process.server) {
+      //   this.user = ssrContext?.event.context.user || null
+      //   this.isAuthReady = !!this.user
+      // } else {
+      //   onAuthStateChanged($auth, async (user) => {
+      //     await this.setUser(user)
+      //   })
+      // }
+      //
+      if (import.meta.server) {
+        const { data } = await useFetch('/api/auth')
+        this.user = data.value?.user
         this.isAuthReady = !!this.user
       } else {
         onAuthStateChanged($auth, async (user) => {
