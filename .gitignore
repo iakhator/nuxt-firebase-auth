@@ -23,4 +23,3 @@ logs
 .env.*
 !.env.example
 service-account.json
-plugins/firebase.client.ts
