@@ -4,17 +4,19 @@ import { getFirestore } from 'firebase/firestore'
 
 export default defineNuxtPlugin(() => {
   console.log('🔥 Firebase Client Initialized')
-  const config = {
-    apiKey: 'AIzaSyBAjpPVYVAISsTdfORUmW277ljVd_G7mVo',
-    authDomain: 'nuxt-auth-3893a.firebaseapp.com',
-    projectId: 'nuxt-auth-3893a',
-    storageBucket: 'nuxt-auth-3893a.firebasestorage.app',
-    messagingSenderId: '361342646',
-    appId: '1:361342646:web:f58b033c222ca26ed0a817',
-    measurementId: 'G-3KLG637QFM',
+  const config = useRuntimeConfig()
+
+  const firebaseConfig = {
+    apiKey: config.public.API_KEY,
+    authDomain: config.public.AUTH_DOMAIN,
+    projectId: config.public.PROJECT_ID,
+    storageBucket: config.public.STORAGE_BUCKET,
+    messagingSenderId: config.public.MESSAGING_SENDER_ID,
+    appId: config.public.APP_ID,
+    measurementId: config.public.MEASUREMENT_ID,
   }
 
-  const firebaseApp = initializeApp(config)
+  const firebaseApp = initializeApp(firebaseConfig)
   const auth = getAuth(firebaseApp)
   const firestore = getFirestore(firebaseApp)
 
