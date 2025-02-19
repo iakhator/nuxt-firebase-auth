@@ -1,10 +1,11 @@
 import {
   signOut,
-  onAuthStateChanged,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  type User,
+  type UserCredential,
 } from 'firebase/auth'
-import type { User, UserCredential } from 'firebase/auth'
+
 interface FormData {
   email: string
   displayName?: string
@@ -141,14 +142,6 @@ export const useAuthStore = defineStore('auth', {
             headers: { 'X-CSRF-Token': this.csrfToken },
           })
         }
-        // await $fetch('/api/auth/sessionLogin', {
-        //   method: 'POST',
-        //   headers: {
-        //     'Content-Type': 'application/json',
-        //     'X-CSRF-Token': this.csrfToken,
-        //   },
-        //   body: { idToken },
-        // })
         return await navigateTo('/dashboard')
       } catch (error: any) {
         this.errorMessage = error.message
@@ -158,6 +151,17 @@ export const useAuthStore = defineStore('auth', {
     async fetchUser() {
       const { data } = await useFetch('/api/auth/user')
       this.user = data.value?.user || null
+      this.isAuthReady = !!this.user
+    },
+
+    async logOut() {
+      await useFetch('/api/auth/logout', {
+        method: 'POST',
+        headers: { 'X-CSRF-Token': this.csrfToken },
+      })
+      this.user = null
+      this.isAuthReady = false
+      return await navigateTo('/')
     },
   },
 })

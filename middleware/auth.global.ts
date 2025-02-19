@@ -10,14 +10,16 @@ export default defineNuxtRouteMiddleware(async (to) => {
     await authStore.fetchCsrfToken()
   }
 
-  // const publicPages = ['/', '/register']
-  // const authRequired = !publicPages.includes(to.path)
+  await authStore.fetchUser()
 
-  // if (authRequired && !authStore.isAuthReady) {
-  //   return navigateTo('/')
-  // }
+  const publicPages = ['/', '/register']
+  const authRequired = !publicPages.includes(to.path)
 
-  // if (authStore.isAuthReady && publicPages.includes(to.path)) {
-  //   return navigateTo('/dashboard')
-  // }
+  if (authRequired && !authStore.isAuthReady) {
+    return navigateTo('/')
+  }
+
+  if (authStore.isAuthReady && publicPages.includes(to.path)) {
+    return navigateTo('/dashboard')
+  }
 })

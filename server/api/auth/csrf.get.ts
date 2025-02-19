@@ -1,10 +1,6 @@
 import { randomBytes } from 'crypto'
 
 export default defineEventHandler((event) => {
-  // const csrfToken = getCookie(event, 'csrf_token')
-  // return { csrfToken }
-  //
-
   const csrfToken = randomBytes(32).toString('hex')
 
   setCookie(event, 'csrfToken', csrfToken, {
@@ -13,6 +9,5 @@ export default defineEventHandler((event) => {
     sameSite: 'strict',
     path: '/',
   })
-
   return { token: csrfToken }
 })
