@@ -124,5 +124,40 @@ export const useAuthStore = defineStore('auth', {
         console.error('CSRF token fetch error:', error)
       }
     },
+
+    async login({ email, password }: FormData) {
+      const { $auth } = useNuxtApp()
+      try {
+        const userCredential: UserCredential = await signInWithEmailAndPassword(
+          $auth,
+          email,
+          password
+        )
+        const idToken = await userCredential.user.getIdToken()
+        if (idToken) {
+          await useFetch('/api/auth/sessionLogin', {
+            method: 'POST',
+            body: { idToken },
+            headers: { 'X-CSRF-Token': this.csrfToken },
+          })
+        }
+        // await $fetch('/api/auth/sessionLogin', {
+        //   method: 'POST',
+        //   headers: {
+        //     'Content-Type': 'application/json',
+        //     'X-CSRF-Token': this.csrfToken,
+        //   },
+        //   body: { idToken },
+        // })
+        return await navigateTo('/dashboard')
+      } catch (error: any) {
+        this.errorMessage = error.message
+      }
+    },
+
+    async fetchUser() {
+      const { data } = await useFetch('/api/auth/user')
+      this.user = data.value?.user || null
+    },
   },
 })
