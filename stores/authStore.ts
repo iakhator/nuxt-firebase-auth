@@ -15,6 +15,7 @@ interface AuthState {
   user: User | null
   errorMessage: string | null
   isAuthReady: boolean
+  csrfToken: string
 }
 
 interface UserResponse {
@@ -31,86 +32,97 @@ export const useAuthStore = defineStore('auth', {
     user: null,
     errorMessage: null,
     isAuthReady: false,
+    csrfToken: '',
   }),
 
+  // actions: {
+  //   async register({ email, password, displayName }: FormData) {
+  //     const { $auth } = useNuxtApp()
+
+  //     try {
+  //       const userCredential: UserCredential =
+  //         await createUserWithEmailAndPassword($auth, email, password)
+  //       await this.setUser(userCredential.user)
+  //       navigateTo('/dashboard')
+  //     } catch (error: any) {
+  //       this.errorMessage = error.message
+  //     }
+  //   },
+
+  //   async login({ email, password }: FormData) {
+  //     const { $auth } = useNuxtApp()
+  //     try {
+  //       const userCredential: UserCredential = await signInWithEmailAndPassword(
+  //         $auth,
+  //         email,
+  //         password
+  //       )
+  //       await this.setUser(userCredential.user)
+  //       navigateTo('/dashboard')
+  //     } catch (error: any) {
+  //       this.errorMessage = error.message
+  //     }
+  //   },
+
+  //   async setUser(user: User | null) {
+  //     this.user = user
+  //     this.isAuthReady = !!user
+
+  //     if (user) {
+  //       this.user = user
+  //       const token = await user.getIdToken()
+
+  //       useCookie('authToken').value = token
+  //     }
+  //   },
+
+  //   async initSessionAuth() {
+  //     const { $auth, ssrContext } = useNuxtApp()
+
+  //     if (import.meta.server) {
+  //       const { data } = await useFetch('/api/auth/user')
+  //     }
+  //   },
+
+  //   async initAuth() {
+  //     const { $auth, ssrContext } = useNuxtApp()
+  //     // if (process.server) {
+  //     //   this.user = ssrContext?.event.context.user || null
+  //     //   this.isAuthReady = !!this.user
+  //     // } else {
+  //     //   onAuthStateChanged($auth, async (user) => {
+  //     //     await this.setUser(user)
+  //     //   })
+  //     // }
+  //     //
+  //     if (import.meta.server) {
+  //       const { data } = await useFetch('/api/auth')
+  //       this.user = data.value?.user
+  //       this.isAuthReady = !!this.user
+  //     } else {
+  //       onAuthStateChanged($auth, async (user) => {
+  //         await this.setUser(user)
+  //       })
+  //     }
+  //   },
+
+  //   async logOut() {
+  //     const { $auth } = useNuxtApp()
+  //     await signOut($auth)
+  //     this.user = null
+  //     this.isAuthReady = false
+  //     useCookie('authToken').value = null
+  //     navigateTo('/')
+  //   },
+  // },
   actions: {
-    async register({ email, password, displayName }: FormData) {
-      const { $auth } = useNuxtApp()
-
+    async fetchCsrfToken() {
       try {
-        const userCredential: UserCredential =
-          await createUserWithEmailAndPassword($auth, email, password)
-        await this.setUser(userCredential.user)
-        navigateTo('/dashboard')
-      } catch (error: any) {
-        this.errorMessage = error.message
+        const { data } = await useFetch('/api/auth/csrf')
+        this.csrfToken = data.value?.token || ''
+      } catch (error) {
+        console.error('CSRF token fetch error:', error)
       }
-    },
-
-    async login({ email, password }: FormData) {
-      const { $auth } = useNuxtApp()
-      try {
-        const userCredential: UserCredential = await signInWithEmailAndPassword(
-          $auth,
-          email,
-          password
-        )
-        await this.setUser(userCredential.user)
-        navigateTo('/dashboard')
-      } catch (error: any) {
-        this.errorMessage = error.message
-      }
-    },
-
-    async setUser(user: User | null) {
-      this.user = user
-      this.isAuthReady = !!user
-
-      if (user) {
-        this.user = user
-        const token = await user.getIdToken()
-
-        useCookie('authToken').value = token
-      }
-    },
-
-    async initSessionAuth() {
-      const { $auth, ssrContext } = useNuxtApp()
-
-      if (import.meta.server) {
-        const { data } = await useFetch('/api/auth/user')
-      }
-    },
-
-    async initAuth() {
-      const { $auth, ssrContext } = useNuxtApp()
-      // if (process.server) {
-      //   this.user = ssrContext?.event.context.user || null
-      //   this.isAuthReady = !!this.user
-      // } else {
-      //   onAuthStateChanged($auth, async (user) => {
-      //     await this.setUser(user)
-      //   })
-      // }
-      //
-      if (import.meta.server) {
-        const { data } = await useFetch('/api/auth')
-        this.user = data.value?.user
-        this.isAuthReady = !!this.user
-      } else {
-        onAuthStateChanged($auth, async (user) => {
-          await this.setUser(user)
-        })
-      }
-    },
-
-    async logOut() {
-      const { $auth } = useNuxtApp()
-      await signOut($auth)
-      this.user = null
-      this.isAuthReady = false
-      useCookie('authToken').value = null
-      navigateTo('/')
     },
   },
 })

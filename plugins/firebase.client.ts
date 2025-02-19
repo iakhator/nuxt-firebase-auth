@@ -1,5 +1,9 @@
 import { initializeApp } from 'firebase/app'
-import { getAuth } from 'firebase/auth'
+import {
+  getAuth,
+  setPersistence,
+  browserSessionPersistence,
+} from 'firebase/auth'
 import { getFirestore } from 'firebase/firestore'
 
 export default defineNuxtPlugin(() => {
@@ -19,6 +23,14 @@ export default defineNuxtPlugin(() => {
   const firebaseApp = initializeApp(firebaseConfig)
   const auth = getAuth(firebaseApp)
   const firestore = getFirestore(firebaseApp)
+
+  setPersistence(auth, browserSessionPersistence)
+    .then(() => {
+      console.log('🔐 Auth persistence set to l')
+    })
+    .catch((error) => {
+      console.error('❌ Failed to set auth persistence:', error)
+    })
 
   return {
     provide: {
