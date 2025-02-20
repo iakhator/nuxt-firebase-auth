@@ -13,9 +13,6 @@ async function signUp() {
   const authStore = useAuthStore()
 
   await authStore.register(form.value)
-  if (authStore.user) {
-    router.push('/dashboard')
-  }
 }
 </script>
 

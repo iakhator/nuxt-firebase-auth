@@ -4,10 +4,12 @@ export default defineEventHandler(async (event) => {
   try {
     const { adminAuth } = useFirebaseAdmin()
     const { idToken } = await readBody(event)
+    const csrfCookie = getCookie(event, 'csrfToken')
+
     const csrfTokenHeader = getHeaders(event)['x-csrf-token']
 
-    if (!csrfTokenHeader) {
-      throw createError({ statusCode: 403, message: 'Missing CSRF token' })
+    if (!csrfTokenHeader || csrfTokenHeader !== csrfCookie) {
+      throw createError({ statusCode: 403, message: 'Mismatch CSRF token' })
     }
 
     // Verify Firebase ID token

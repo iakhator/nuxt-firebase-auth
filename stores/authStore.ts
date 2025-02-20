@@ -1,7 +1,7 @@
 import {
-  signOut,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  updateProfile,
   type User,
   type UserCredential,
 } from 'firebase/auth'
@@ -130,24 +130,57 @@ export const useAuthStore = defineStore('auth', {
       this.csrfToken = useCookie('csrfToken').value || null
     },
 
-    async login({ email, password }: FormData) {
+    async register({ email, password, displayName }: FormData) {
       await this.fetchCsrfToken()
-      const { $auth } = useNuxtApp()
+
       try {
-        const userCredential: UserCredential = await signInWithEmailAndPassword(
+        if (!this.csrfToken) {
+          throw new Error('CSRF token is missing. Registration blocked.')
+        }
+        const { $auth } = useNuxtApp()
+        const userCredential = await createUserWithEmailAndPassword(
           $auth,
           email,
           password
         )
+
+        await updateProfile(userCredential.user, { displayName })
+
         const idToken = await userCredential.user.getIdToken()
+
         if (idToken) {
           await useFetch('/api/auth/sessionLogin', {
             method: 'POST',
             body: { idToken },
             headers: { 'X-CSRF-Token': this.csrfToken },
           })
+          return await navigateTo('/dashboard')
         }
-        return await navigateTo('/dashboard')
+      } catch (error: any) {
+        this.errorMessage = error.message
+      }
+    },
+
+    async login({ email, password }: FormData) {
+      await this.fetchCsrfToken()
+      try {
+        const { $auth } = useNuxtApp()
+        const userCredential: UserCredential = await signInWithEmailAndPassword(
+          $auth,
+          email,
+          password
+        )
+        const idToken = await userCredential.user.getIdToken()
+
+        if (idToken) {
+          await useFetch('/api/auth/sessionLogin', {
+            method: 'POST',
+            body: { idToken },
+            headers: { 'X-CSRF-Token': this.csrfToken },
+          })
+
+          return await navigateTo('/dashboard')
+        }
       } catch (error: any) {
         this.errorMessage = error.message
       }

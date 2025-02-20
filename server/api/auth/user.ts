@@ -4,6 +4,7 @@ export default defineEventHandler(async (event) => {
   const { adminAuth } = useFirebaseAdmin()
   try {
     const sessionCookie = getCookie(event, 'session')
+
     if (!sessionCookie) {
       throw createError({ statusCode: 401, message: 'Unauthorized' })
     }
