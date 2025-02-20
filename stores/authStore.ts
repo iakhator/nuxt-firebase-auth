@@ -16,7 +16,7 @@ interface AuthState {
   user: User | null
   errorMessage: string | null
   isAuthReady: boolean
-  csrfToken: string
+  csrfToken: string | null
 }
 
 interface UserResponse {
@@ -126,7 +126,12 @@ export const useAuthStore = defineStore('auth', {
       }
     },
 
+    async initAuth() {
+      this.csrfToken = useCookie('csrfToken').value || null
+    },
+
     async login({ email, password }: FormData) {
+      await this.fetchCsrfToken()
       const { $auth } = useNuxtApp()
       try {
         const userCredential: UserCredential = await signInWithEmailAndPassword(

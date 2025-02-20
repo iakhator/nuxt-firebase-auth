@@ -7,5 +7,6 @@ export default defineEventHandler((event) => {
   }
 
   deleteCookie(event, 'session')
+  deleteCookie(event, 'csrfToken')
   return { message: 'Logged out' }
 })

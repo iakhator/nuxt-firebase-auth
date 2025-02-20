@@ -2,7 +2,8 @@
 // import { useAuthStore } from '~/stores/authStore'
 
 // const authStore = useAuthStore()
-// await authStore.initAuth()
+
+// authStore.fetchCsrfToken()
 </script>
 
 <template>

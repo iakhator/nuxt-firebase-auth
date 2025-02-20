@@ -4,8 +4,6 @@ export default defineEventHandler(async (event) => {
   try {
     const { adminAuth } = useFirebaseAdmin()
     const { idToken } = await readBody(event)
-    const csrfCookie = getCookie(event, 'csrfToken')
-
     const csrfTokenHeader = getHeaders(event)['x-csrf-token']
 
     if (!csrfTokenHeader) {

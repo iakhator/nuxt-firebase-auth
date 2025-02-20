@@ -2,12 +2,10 @@ import { useAuthStore } from '~/stores/authStore'
 
 export default defineNuxtRouteMiddleware(async (to) => {
   const authStore = useAuthStore()
-  // await authStore.initAuth()
-  //
 
   // Fetch CSRF token if not already available
   if (!authStore.csrfToken) {
-    await authStore.fetchCsrfToken()
+    await authStore.initAuth()
   }
 
   await authStore.fetchUser()
